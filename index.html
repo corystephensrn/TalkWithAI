@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeyGen Embed</title>
+</head>
+<body>
+  <h1>HeyGen Streaming Embed Test</h1>
+  <p>If successful, the HeyGen bubble will appear in the bottom left.</p>
+
+  <!-- HeyGen embed script -->
+  <script>
+    !function(window){
+      const host="https://labs.heygen.com";
+      const url=host+"/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJQZWRyb19DYXN1YWxMb29rX3B1YmxpYyIs%0D%0AInByZXZpZXdJbWciOiJodHRwczovL2ZpbGVzMi5oZXlnZW4uYWkvYXZhdGFyL3YzLzRjYTdlYjc0%0D%0ANDJmNzRmZTBiYmNjMjA1ZjNmZTZmMjcxXzU1OTAwL3ByZXZpZXdfdGFyZ2V0LndlYnAiLCJuZWVk%0D%0AUmVtb3ZlQmFja2dyb3VuZCI6ZmFsc2UsImtub3dsZWRnZUJhc2VJZCI6IjE5NmRjMGJiM2FlNTQx%0D%0AZGU4YzI4YWUyMDNjZmE2Nzk3IiwidXNlcm5hbWUiOiIyNGIxMmI3NzY5MTI0MmNkOTU5MmNiOTY5%0D%0AZjU2YzQ1ZSJ9&inIFrame=1";
+      const clientWidth=document.body.clientWidth;
+
+      const wrapDiv=document.createElement("div");
+      wrapDiv.id="heygen-streaming-embed";
+
+      const container=document.createElement("div");
+      container.id="heygen-streaming-container";
+
+      const stylesheet=document.createElement("style");
+      stylesheet.innerHTML=`
+        #heygen-streaming-embed {
+          z-index: 9999; position: fixed; left: 40px; bottom: 40px;
+          width: 200px; height: 200px; border-radius: 50%;
+          border: 2px solid #fff; box-shadow: 0 8px 24px rgba(0,0,0,.12);
+          transition: all linear .1s; overflow: hidden; opacity: 0; visibility: hidden;
+        }
+        #heygen-streaming-embed.show { opacity: 1; visibility: visible; }
+        #heygen-streaming-embed.expand {
+          ${clientWidth<540 ? "height:266px;width:96%;left:50%;transform:translateX(-50%);" : "height:366px;width:calc(366px * 16 / 9);"}
+          border:0; border-radius:8px;
+        }
+        #heygen-streaming-container, #heygen-streaming-container iframe { width:100%; height:100%; border:0; }
+      `;
+
+      const iframe=document.createElement("iframe");
+      iframe.allowFullscreen=false;
+      iframe.title="Streaming Embed";
+      iframe.role="dialog";
+      iframe.allow="microphone";
+      iframe.src=url;
+
+      let visible=false, initial=false;
+      window.addEventListener("message",(e)=>{
+        if(e.origin===host && e.data && e.data.type==="streaming-embed"){
+          if(e.data.action==="init"){ initial=true; wrapDiv.classList.toggle("show",true); }
+          else if(e.data.action==="show"){ visible=true; wrapDiv.classList.toggle("expand",true); }
+          else if(e.data.action==="hide"){ visible=false; wrapDiv.classList.toggle("expand",false); }
+        }
+      });
+
+      container.appendChild(iframe);
+      wrapDiv.appendChild(stylesheet);
+      wrapDiv.appendChild(container);
+      document.body.appendChild(wrapDiv);
+    }(globalThis);
+  </script>
+</body>
+</html>
